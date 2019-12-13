@@ -16,7 +16,7 @@ class DrawsState extends State<Draws>
   bool get wantKeepAlive => true;
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
   // TODO: Place this in a model file
-  final cardsIdentity = [
+  final List<List <String>> cardsIdentity = [
     // Arcana names
     [
       "Le Tronc",

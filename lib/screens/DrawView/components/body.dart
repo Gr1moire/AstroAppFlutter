@@ -15,6 +15,7 @@ class DrawsState extends State<Draws>
     with AutomaticKeepAliveClientMixin<Draws> {
   bool get wantKeepAlive => true;
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+  // TODO: Place this in a model file
   final cardsIdentity = [
     // Arcana names
     [
@@ -48,18 +49,18 @@ class DrawsState extends State<Draws>
     ],
     // Arcana main colors
     [
-      "#edf982",
-      "#ffc0af",
-      "#ffd7af",
-      "#8cafc0",
-      "#8dc6b3",
-      "#95a1c7",
-      "#edf982",
-      "#ffc0af",
-      "#ffd7af",
-      "#8cafc0",
-      "#8dc6b3",
-      "#95a1c7",
+      "edf982",
+      "ffc0af",
+      "ffd7af",
+      "8cafc0",
+      "8dc6b3",
+      "95a1c7",
+      "edf982",
+      "ffc0af",
+      "ffd7af",
+      "8cafc0",
+      "8dc6b3",
+      "95a1c7",
     ],
   ];
 
@@ -78,56 +79,56 @@ class DrawsState extends State<Draws>
     AssetImage('assets/cards/SpearReverse.png'),
   ];
 
-  final AssetImage cardBack = AssetImage('assets/cards/Back.png');
-  final positionText = [
+  final AssetImage _cardBack = AssetImage('assets/cards/Back.png');
+  final _positionText = [
     "Passé",
     "Futur",
     "Présent",
   ];
   final int position;
   var drawnCards = List(3);
-  AssetImage cardCurrent;
-  bool enableTouch;
-  bool refreshIsVisible;
-  num previousCard;
+  AssetImage _cardCurrent;
+  bool _enableTouch;
+  bool _refreshIsVisible;
+  num _previousCard;
 
   DrawsState({this.position});
 
   @override
   void initState() {
     super.initState();
-    this.enableTouch = true;
-    this.cardCurrent = this.cardBack;
-    this.refreshIsVisible = false;
-    this.previousCard = -1;
+    this._enableTouch = true;
+    this._cardCurrent = this._cardBack;
+    this._refreshIsVisible = false;
+    this._previousCard = -1;
   }
 
   void _changeArcana() {
     num randomNum = Random().nextInt(cardList.length);
     this.drawnCards[this.position] = randomNum;
     setState(() {
-      this.cardCurrent = cardList[randomNum];
-      this.enableTouch = false;
-      this.refreshIsVisible = true;
+      this._cardCurrent = cardList[randomNum];
+      this._enableTouch = false;
+      this._refreshIsVisible = true;
     });
   }
 
   Widget _setResetButton() {
     return (Row(mainAxisAlignment: MainAxisAlignment.end, children: [
       AnimatedOpacity(
-          opacity: refreshIsVisible ? 1.0 : 0.0,
+          opacity: _refreshIsVisible ? 1.0 : 0.0,
           duration: Duration(milliseconds: 500),
           child: Container(
               child: ButtonTheme(
                   shape: CircleBorder(),
                   child: RaisedButton(
                     onPressed: () {
-                      if (refreshIsVisible) {
+                      if (_refreshIsVisible) {
                         cardKey.currentState.toggleCard();
                         setState(() {
                           this.drawnCards[this.position] = null;
-                          this.enableTouch = true;
-                          this.refreshIsVisible = false;
+                          this._enableTouch = true;
+                          this._refreshIsVisible = false;
                         });
                       }
                     },
@@ -145,16 +146,16 @@ class DrawsState extends State<Draws>
 
     // ! There certainly is a better way to do that.
     if (this.drawnCards[this.position] is num) {
-      this.previousCard = this.drawnCards[this.position];
+      this._previousCard = this.drawnCards[this.position];
       arcanaName = this.cardsIdentity[0][this.drawnCards[this.position]];
     } else if (!(this.drawnCards[this.position] is num) &&
-        this.previousCard >= 0)
-      arcanaName = this.cardsIdentity[0][this.previousCard];
+        this._previousCard >= 0)
+      arcanaName = this.cardsIdentity[0][this._previousCard];
     else
       arcanaName = ' ';
 
     return (AnimatedOpacity(
-        opacity: this.refreshIsVisible ? 1.0 : 0,
+        opacity: this._refreshIsVisible ? 1.0 : 0,
         duration: Duration(milliseconds: 500),
         child: Container(
             child: Text(
@@ -185,54 +186,53 @@ class DrawsState extends State<Draws>
       Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(top: 75.0),
-          child: Column(
-              children: <Widget>[
-                // Cards handler
-                FlipCard(
-                  key: cardKey,
-                  flipOnTouch: enableTouch,
-                  onFlip: () {
-                    if (enableTouch)
-                      this._changeArcana();
-                    else
-                      return;
-                  },
-                  direction: FlipDirection.HORIZONTAL, // default
-                  // Back of the card
-                  front: Container(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(boxShadow: [cardsShadow]),
-                            child: Image(image: cardBack),
-                          )
-                        ]),
-                  ),
-                  // Front of the card
-                  back: Container(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(boxShadow: [cardsShadow]),
-                            child: Image(image: cardCurrent),
-                          )
-                        ]),
-                  ),
-                ),
-                // Position in the drawing
-                Text(
-                  this.positionText[this.position],
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                // Display drawn arcana name
-                _setArcanaNameText(),
-              ]),
+          child: Column(children: <Widget>[
+            // Cards handler
+            FlipCard(
+              key: cardKey,
+              flipOnTouch: _enableTouch,
+              onFlip: () {
+                if (_enableTouch)
+                  this._changeArcana();
+                else
+                  return;
+              },
+              direction: FlipDirection.HORIZONTAL, // default
+              // Back of the card
+              front: Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(boxShadow: [cardsShadow]),
+                        child: Image(image: _cardBack),
+                      )
+                    ]),
+              ),
+              // Front of the card
+              back: Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(boxShadow: [cardsShadow]),
+                        child: Image(image: _cardCurrent),
+                      )
+                    ]),
+              ),
+            ),
+            // Position in the drawing
+            Text(
+              this._positionText[this.position],
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            // Display drawn arcana name
+            _setArcanaNameText(),
+          ]),
         ),
       ])
     ]);

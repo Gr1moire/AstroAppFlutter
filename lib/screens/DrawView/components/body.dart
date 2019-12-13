@@ -102,15 +102,6 @@ class DrawsState extends State<Draws>
     this.previousCard = -1;
   }
 
-  // ! Images will be preloaded thrice, it might affect performances
-  // TODO: Cache images in parent, then pass them to child.
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    this.cardList.forEach((image) => precacheImage(image, context));
-    precacheImage(this.cardBack, context);
-  }
-
   void _changeArcana() {
     num randomNum = Random().nextInt(cardList.length);
     this.drawnCards[this.position] = randomNum;
@@ -150,8 +141,7 @@ class DrawsState extends State<Draws>
   }
 
   Widget _setArcanaNameText() {
-    String initial = " ";
-    String arcanaName = initial;
+    String arcanaName = ' ';
 
     // ! There certainly is a better way to do that.
     if (this.drawnCards[this.position] is num) {
@@ -161,7 +151,7 @@ class DrawsState extends State<Draws>
         this.previousCard >= 0)
       arcanaName = this.cardsIdentity[0][this.previousCard];
     else
-      arcanaName = initial;
+      arcanaName = ' ';
 
     return (AnimatedOpacity(
         opacity: this.refreshIsVisible ? 1.0 : 0,
@@ -196,7 +186,6 @@ class DrawsState extends State<Draws>
         Padding(
           padding: const EdgeInsets.only(top: 75.0),
           child: Column(
-              //   mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 // Cards handler
                 FlipCard(

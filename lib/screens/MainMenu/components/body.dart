@@ -5,22 +5,24 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Top-left question icon
-    var questionIcon = Container(
-      child: Column(children: <Widget>[
-        const SizedBox(height: 20),
-        Row(
-          children: <Widget>[
-            const SizedBox(width: 25),
-            Icon(
-              Icons.help_outline,
-              color: Colors.black,
-              size: 50,
-              semanticLabel: 'Question',
-            )
-          ],
-        ),
-      ]),
-    );
+    var questionIcon = Column(children: <Widget>[
+      const SizedBox(height: 20),
+      Row(children: <Widget>[
+        //    const SizedBox(width: 5),
+        Container(
+            child: ButtonTheme(
+                shape: CircleBorder(),
+                child: RaisedButton(
+                  onPressed: () {},
+                  color: Colors.white,
+                  child: Icon(
+                    Icons.help,
+                    size: 30,
+                    color: Colors.black,
+                  ),
+                ))),
+      ])
+    ]);
 
     // Main icon on first screen
     var mainIcon = Icon(
@@ -34,19 +36,19 @@ class Body extends StatelessWidget {
     var raisedButton = ButtonTheme(
         minWidth: 300.0,
         child: RaisedButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DrawView(),
-                  ));
-            },
-            child: const Text('Tirage',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            color: Colors.orangeAccent,
-            splashColor: Colors.deepOrange,
-            shape: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black))));
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DrawView(),
+                ));
+          },
+          child: const Text('Tirage',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          color: Colors.amber[300],
+         // splashColor: Colors.deepOrange[300],
+          shape: StadiumBorder(),
+        ));
 
     return Stack(children: <Widget>[
       questionIcon,

@@ -6,9 +6,8 @@ class Body extends StatelessWidget {
   Widget build(BuildContext context) {
     // Top-left question icon
     var questionIcon = Column(children: <Widget>[
-      const SizedBox(height: 20),
+      const SizedBox(height: 35),
       Row(children: <Widget>[
-        //    const SizedBox(width: 5),
         Container(
             child: ButtonTheme(
                 shape: CircleBorder(),
@@ -60,7 +59,7 @@ class Body extends StatelessWidget {
             children: <Widget>[
               mainIcon,
               Text(
-                'Astrologian Mobile Application',
+                'AstroApp',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               const SizedBox(

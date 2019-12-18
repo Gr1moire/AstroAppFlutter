@@ -1,161 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:flip_card/flip_card.dart';
-import 'dart:math';
+import 'package:astro_app/screens/DrawView/components/DrawSwipeElement.dart';
+import 'package:astro_app/model/cardsModel.dart';
 
 class Draws extends StatefulWidget {
-  final int position;
-
-  const Draws({Key key, this.position}) : super(key: key);
+  const Draws({Key key}) : super(key: key);
 
   @override
-  DrawsState createState() => DrawsState(position: this.position);
+  DrawsState createState() => DrawsState();
 }
 
-class DrawsState extends State<Draws>
-    with AutomaticKeepAliveClientMixin<Draws> {
-  bool get wantKeepAlive => true;
-  GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
-  // TODO: Place this in a model file
-  final List<List <String>> cardsIdentity = [
-    // Arcana names
-    [
-      "Le Tronc",
-      "La Balance",
-      "La Tour",
-      "L'Aiguière",
-      "La Flèche",
-      "L'Epieu",
-      "Le Tronc renversé",
-      "La Balance renversée",
-      "La Tour renversée",
-      "L'Aiguière renversée",
-      "La Flèche renversée",
-      "L'Epieu renversé",
-    ],
-    // Arcana symbols
-    [
-      "Protection & générosité",
-      "Justice & prospérité",
-      "Ingéniosité & volonté",
-      "Savoir & éveil",
-      "Liberté & découverte",
-      "Force & foi",
-      "Reconsidération & maladie",
-      "Jugement & trahison",
-      "Difficulté & persévérance",
-      "Egarement de l'âme & introspection",
-      "Obstination & jalousie",
-      "Epreuve & vengeance",
-    ],
-    // Arcana main colors
-    [
-      "edf982",
-      "ffc0af",
-      "ffd7af",
-      "8cafc0",
-      "8dc6b3",
-      "95a1c7",
-      "edf982",
-      "ffc0af",
-      "ffd7af",
-      "8cafc0",
-      "8dc6b3",
-      "95a1c7",
-    ],
+class DrawsState extends State<Draws> {
+  Cards cardsModel = Cards();
+  // ! _lastCardDrawn should be an updateDrawnCard()'s variable
+  int _lastCardDrawn;
+  num _activePage;
+  bool _shouldRefreshBeVisible;
+  bool _shouldArcanaNameBeVisible;
+  String positionName;
+  List<List<int>> drawnCards = [
+    // ? I guess we could just initialize it on the fly...
+    [-7, -7],
+    [-7, -7],
+    [-7, -7],
   ];
 
-  final List<AssetImage> cardList = [
-    AssetImage('assets/cards/Bole.png'),
-    AssetImage('assets/cards/Balance.png'),
-    AssetImage('assets/cards/Spire.png'),
-    AssetImage('assets/cards/Ewer.png'),
-    AssetImage('assets/cards/Arrow.png'),
-    AssetImage('assets/cards/Spear.png'),
-    AssetImage('assets/cards/BalanceReverse.png'),
-    AssetImage('assets/cards/BoleReverse.png'),
-    AssetImage('assets/cards/SpireReverse.png'),
-    AssetImage('assets/cards/EwerReverse.png'),
-    AssetImage('assets/cards/ArrowReverse.png'),
-    AssetImage('assets/cards/SpearReverse.png'),
-  ];
-
-  final AssetImage _cardBack = AssetImage('assets/cards/Back.png');
-  final _positionText = [
-    "Passé",
-    "Futur",
-    "Présent",
-  ];
-  final int position;
-  var drawnCards = List(3);
-  AssetImage _cardCurrent;
-  bool _enableTouch;
-  bool _refreshIsVisible;
-  num _previousCard;
-
-  DrawsState({this.position});
+  DrawsState();
 
   @override
   void initState() {
     super.initState();
-    this._enableTouch = true;
-    this._cardCurrent = this._cardBack;
-    this._refreshIsVisible = false;
-    this._previousCard = -1;
+    this._shouldRefreshBeVisible = true;
+    this._shouldArcanaNameBeVisible = false;
+    this._activePage = 0;
+    this.positionName = cardsModel.positionText[this._activePage];
+    this._lastCardDrawn = -1;
   }
 
-  void _changeArcana() {
-    num randomNum = Random().nextInt(cardList.length);
-    this.drawnCards[this.position] = randomNum;
+  void updateDrawnCards(int position, int cardDrawn) {
     setState(() {
-      this._cardCurrent = cardList[randomNum];
-      this._enableTouch = false;
-      this._refreshIsVisible = true;
+      if (this.drawnCards[position][0] != -7)
+        this._lastCardDrawn = this.drawnCards[position][0];
+      this._shouldArcanaNameBeVisible = true;
+      this.drawnCards[position][0] = cardDrawn;
+      this.drawnCards[position][1] = cardDrawn <= 5 ? cardDrawn + 6 : cardDrawn - 6; 
     });
   }
 
-  Widget _setResetButton() {
-    return (Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-      AnimatedOpacity(
-          opacity: _refreshIsVisible ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 500),
-          child: Container(
-              child: ButtonTheme(
-                  shape: CircleBorder(),
-                  child: RaisedButton(
-                    onPressed: () {
-                      if (_refreshIsVisible) {
-                        cardKey.currentState.toggleCard();
-                        setState(() {
-                          this.drawnCards[this.position] = null;
-                          this._enableTouch = true;
-                          this._refreshIsVisible = false;
-                        });
-                      }
-                    },
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.refresh,
-                      color: Colors.black,
-                    ),
-                  ))))
-    ]));
-  }
-
-  Widget _setArcanaNameText() {
+  Widget _displayArcanaName() {
     String arcanaName = ' ';
 
     // ! There certainly is a better way to do that.
-    if (this.drawnCards[this.position] is num) {
-      this._previousCard = this.drawnCards[this.position];
-      arcanaName = this.cardsIdentity[0][this.drawnCards[this.position]];
-    } else if (!(this.drawnCards[this.position] is num) &&
-        this._previousCard >= 0)
-      arcanaName = this.cardsIdentity[0][this._previousCard];
+    if (this.drawnCards[this._activePage][0] != -7) {
+      this._lastCardDrawn = this.drawnCards[this._activePage][0];
+      arcanaName = this.cardsModel.arcanaNames[this.drawnCards[this._activePage][0]];
+    } else if (!(this.drawnCards[this._activePage][0] == -7) &&
+        this._lastCardDrawn >= 0)
+      arcanaName = this.cardsModel.arcanaNames[this._lastCardDrawn];
     else
       arcanaName = ' ';
 
     return (AnimatedOpacity(
-        opacity: this._refreshIsVisible ? 1.0 : 0,
+        opacity: this._shouldArcanaNameBeVisible ? 1.0 : 0,
         duration: Duration(milliseconds: 500),
         child: Container(
             child: Text(
@@ -168,72 +73,68 @@ class DrawsState extends State<Draws>
         ))));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    BoxShadow cardsShadow = BoxShadow(
-        blurRadius: 1.5,
-        spreadRadius: -7,
-        color: Colors.black54,
-        offset: Offset(7, 8));
+  Widget _displayDrawPositionName() {
+    return Text(
+          this.positionName,
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+          ),
+        );
+  }
 
+  // TODO: Add a curved swipe animation
+  Widget _displaySwippableCards() {
+    return (Container(
+      child: PageView.builder(
+        onPageChanged: (num) {
+          setState(() {
+            this._shouldRefreshBeVisible = false;
+            this._activePage = num;
+          });
+          setState(() {
+            this.positionName = cardsModel.positionText[this._activePage];
+            this._shouldRefreshBeVisible = true;
+          });
+        },
+        controller: PageController(initialPage: this._activePage, viewportFraction: 0.70),
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          return Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              InkWell(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Container(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(2.0),
+                          child: Center(
+                            child: DrawSwipeElement(updateDrawnCards: updateDrawnCards, position: this._activePage, drawnCards: this.drawnCards),
+                          ))),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    ));
+  }
+
+  Widget build(BuildContext context) {
     return Stack(children: [
-      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 60.0),
-          child: _setResetButton(),
-        ),
-      ]),
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(top: 75.0),
-          child: Column(children: <Widget>[
-            // Cards handler
-            FlipCard(
-              key: cardKey,
-              flipOnTouch: _enableTouch,
-              onFlip: () {
-                if (_enableTouch)
-                  this._changeArcana();
-                else
-                  return;
-              },
-              direction: FlipDirection.HORIZONTAL, // default
-              // Back of the card
-              front: Container(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(boxShadow: [cardsShadow]),
-                        child: Image(image: _cardBack),
-                      )
-                    ]),
-              ),
-              // Front of the card
-              back: Container(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(boxShadow: [cardsShadow]),
-                        child: Image(image: _cardCurrent),
-                      )
-                    ]),
-              ),
-            ),
-            // Position in the drawing
-            Text(
-              this._positionText[this.position],
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-            // Display drawn arcana name
-            _setArcanaNameText(),
-          ]),
-        ),
+      _displaySwippableCards(),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 75.0),
+            child: Column(children: <Widget>[
+              _displayDrawPositionName(),
+              _displayArcanaName(),
+            ]),
+          ),
+        ])
       ])
     ]);
   }

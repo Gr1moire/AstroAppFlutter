@@ -27,9 +27,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     this.assetsToCache.forEach((image) => precacheImage(image, context));
     //   SystemChrome.setEnabledSystemUIOverlays([]);
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.black, systemNavigationBarColor: Colors.black));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.black, systemNavigationBarColor: Colors.black));
     return MaterialApp(
+      builder: (context, child) {
+        return ScrollConfiguration(
+          behavior: OverscrollBehavior(),
+          child: child,
+        );
+      },
       debugShowCheckedModeBanner: false,
       title: 'AstroApp',
       theme: appTheme(),

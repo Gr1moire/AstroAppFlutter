@@ -109,7 +109,8 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
         spreadRadius: -7,
         color: Colors.black54,
         offset: Offset(7, 8));
-    return FlipCard(
+    return
+    FlipCard(
       key: cardKey,
       direction: FlipDirection.HORIZONTAL,
       flipOnTouch: _enableTouch,
@@ -120,7 +121,7 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
           return;
       },
       // Back of the card
-      front: Container(
+      front: FittedBox(
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           Container(
@@ -130,7 +131,7 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
         ]),
       ),
       // Front of the card
-      back: Container(
+      back: FittedBox(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
             decoration: BoxDecoration(boxShadow: [cardsShadow]),

@@ -13,6 +13,7 @@ class Draws extends StatefulWidget {
 
 class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   GlobalKey _titleKey = GlobalKey();
+  PanelController _slidingPanelControler = PanelController();
   Cards cardsModel = Cards();
   // ! _lastCardDrawn should be an updateDrawnCard()'s variable
   int _lastCardDrawn;
@@ -35,7 +36,6 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   @override
   void initState() {
     super.initState();
-    this._screenHeight = MediaQuery.of(context).size.height;
     this._shouldRefreshBeVisible = true;
     this._shouldArcanaNameBeVisible = false;
     this._activePage = 0;
@@ -43,10 +43,18 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
     this._lastCardDrawn = -1;
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    this._screenHeight = MediaQuery.of(context).size.height;
+  }
+
   void updateDrawnCards(int position, int cardDrawn) {
     setState(() {
-      if (this.drawnCards[position][0] != -7)
+      if (this.drawnCards[position][0] != -7) {
         this._lastCardDrawn = this.drawnCards[position][0];
+      }
+      this._slidingPanelControler.show();
       this._shouldArcanaNameBeVisible = true;
       this.drawnCards[position][0] = cardDrawn;
       this.drawnCards[position][1] =
@@ -55,9 +63,10 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   }
 
   double _getTitlePosition() {
-    final RenderBox renderBoxTitle = _titleKey.currentContext.findRenderObject();
+    final RenderBox renderBoxTitle =
+        _titleKey.currentContext.findRenderObject();
     final positionTitle = renderBoxTitle.localToGlobal(Offset.zero);
-    return MediaQuery.of(context).size.height - (positionTitle.dy * 1.5);
+    return this._screenHeight - (positionTitle.dy * 1.5);
   }
 
   // TODO: Fix the animated opacity; Add color by arcana
@@ -78,7 +87,6 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
         opacity: this._shouldArcanaNameBeVisible ? 1.0 : 0,
         duration: Duration(milliseconds: 500),
         child: Container(
-          
             key: _titleKey,
             child: Text(
               arcanaName,
@@ -135,13 +143,14 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
           setState(() {
             this._shouldRefreshBeVisible = false;
             this._activePage = num;
+            this.positionName = cardsModel.positionText[this._activePage];
             if (this.drawnCards[num][0] == -7) {
               this._shouldArcanaNameBeVisible = false;
+              this._slidingPanelControler.hide();
+            } else {
+              this._shouldArcanaNameBeVisible = true;
+              this._slidingPanelControler.show();
             }
-          });
-          setState(() {
-            this.positionName = cardsModel.positionText[this._activePage];
-            this._shouldRefreshBeVisible = true;
           });
         },
         controller: PageController(
@@ -182,7 +191,8 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
     // SlidingUpPanel from here
     return SlidingUpPanel(
       maxHeight: this._slidingUpPanelHeight,
-      minHeight: MediaQuery.of(context).size.height / 10,
+      minHeight: this._screenHeight / 10,
+      controller: _slidingPanelControler,
       panel: Container(
           decoration:
               BoxDecoration(color: Colors.redAccent[100], borderRadius: radius),
@@ -224,10 +234,13 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
       ]),
     );
   }
-    @override
+
+  @override
   void afterFirstLayout(BuildContext context) {
     setState(() {
       this._slidingUpPanelHeight = _getTitlePosition();
     });
+    this._slidingPanelControler.hide();
+    ;
   }
 }

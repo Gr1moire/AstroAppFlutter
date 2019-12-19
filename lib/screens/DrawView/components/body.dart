@@ -14,17 +14,15 @@ class Draws extends StatefulWidget {
 class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   PanelController _slidingPanelControler = PanelController();
   Cards cardsModel = Cards();
-  // ! _lastCardDrawn should be an updateDrawnCard()'s variable
   int _lastCardDrawn;
   num _activePage;
   double _slidingUpPanelHeight = 1;
   double _screenHeight;
   bool _shouldRefreshBeVisible;
   bool _shouldArcanaNameBeVisible;
-  String positionName;
   List<List<int>> drawnCards = [
     // ? I guess we could just initialize it on the fly...
-    // Each member is composed of [0] as the drawn card, and [1] as it's oposite (which is [0] + 6)
+    // Each member is composed of [0] as the drawn card, and [1] as it's oposite (which is [0] + 6 if [0] < 6 or [0] - 6 if [0] >= 6)
     [-7, -7],
     [-7, -7],
     [-7, -7],
@@ -38,7 +36,6 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
     this._shouldRefreshBeVisible = true;
     this._shouldArcanaNameBeVisible = false;
     this._activePage = 0;
-    this.positionName = cardsModel.positionText[this._activePage];
     this._lastCardDrawn = -1;
   }
 
@@ -61,25 +58,24 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
     });
   }
 
-
-
   // TODO: Add a curved swipe animation
   Widget _displaySwippableCards() {
     return (Container(
       child: PageView.builder(
         onPageChanged: (num) {
-          setState(() {
-            this._shouldRefreshBeVisible = false;
-            this._activePage = num;
-            this.positionName = cardsModel.positionText[this._activePage];
-            if (this.drawnCards[num][0] == -7) {
-              this._shouldArcanaNameBeVisible = false;
-              this._slidingPanelControler.hide();
-            } else {
-              this._shouldArcanaNameBeVisible = true;
-              this._slidingPanelControler.show();
-            }
-          });
+          setState(
+            () {
+              this._shouldRefreshBeVisible = false;
+              this._activePage = num;
+              if (this.drawnCards[num][0] == -7) {
+                this._shouldArcanaNameBeVisible = false;
+                this._slidingPanelControler.hide();
+              } else {
+                this._shouldArcanaNameBeVisible = true;
+                this._slidingPanelControler.show();
+              }
+            },
+          );
         },
         controller: PageController(
             initialPage: this._activePage, viewportFraction: 0.70),
@@ -93,15 +89,17 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
                 padding: EdgeInsets.only(right: 5, left: 5),
                 child: Container(
                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(2.0),
-                      child: Padding(
-                          padding: EdgeInsets.only(bottom: 41, top: 35),
-                          child: Center(
-                            child: DrawSwipeElement(
-                                updateDrawnCards: updateDrawnCards,
-                                position: this._activePage,
-                                drawnCards: this.drawnCards),
-                          ))),
+                    borderRadius: BorderRadius.circular(2.0),
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 41, top: 35),
+                      child: Center(
+                        child: DrawSwipeElement(
+                            updateDrawnCards: updateDrawnCards,
+                            position: this._activePage,
+                            drawnCards: this.drawnCards),
+                      ),
+                    ),
+                  ),
                 ),
               )),
             ],
@@ -112,10 +110,13 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   }
 
   Widget build(BuildContext context) {
+    Color panelContentColor = Colors.transparent;
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(24.0),
       topRight: Radius.circular(24.0),
     );
+    if (this.drawnCards[this._activePage][0] != -7)
+      panelContentColor = cardsModel.arcanaMainColors[this.drawnCards[this._activePage][0]];
     // SlidingUpPanel from here
     return SlidingUpPanel(
       maxHeight: this._slidingUpPanelHeight,
@@ -123,13 +124,14 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
       controller: _slidingPanelControler,
       panel: Container(
           decoration:
-              BoxDecoration(color: Colors.redAccent[100], borderRadius: radius),
+              BoxDecoration(color: panelContentColor, borderRadius: radius),
           child: Center(
             child: Text("Contenu du widget"),
           )),
-      collapsed: Container(
+      collapsed: AnimatedContainer(
+        duration: Duration(milliseconds: 150),
         decoration:
-            BoxDecoration(color: Colors.redAccent[200], borderRadius: radius),
+            BoxDecoration(color: panelContentColor, borderRadius: radius),
         child: Center(
           child: Text(
             "Title du widget",
@@ -145,7 +147,8 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
             padding: const EdgeInsets.only(top: 75.0),
             child: Column(children: <Widget>[
               cardsModel.displayDrawPositionName(this._activePage),
-              cardsModel.displayArcanaName(this.drawnCards, this._lastCardDrawn, this._activePage, this._shouldArcanaNameBeVisible),
+              cardsModel.displayArcanaName(this.drawnCards, this._lastCardDrawn,
+                  this._activePage, this._shouldArcanaNameBeVisible),
             ]),
           ),
           Expanded(
@@ -154,19 +157,24 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
           ),
           Expanded(
             flex: 1,
-            child: cardsModel.displayArcanaSymbols(this.drawnCards, this._lastCardDrawn, this._activePage, this._shouldArcanaNameBeVisible),
+            child: cardsModel.displayArcanaSymbols(
+                this.drawnCards,
+                this._lastCardDrawn,
+                this._activePage,
+                this._shouldArcanaNameBeVisible),
           )
         ])
       ]),
     );
   }
 
+  // This method is immediately executed after build()
   @override
   void afterFirstLayout(BuildContext context) {
     setState(() {
-      this._slidingUpPanelHeight = cardsModel.getTitlePosition(this._screenHeight);
+      this._slidingUpPanelHeight =
+          cardsModel.getTitlePosition(this._screenHeight);
     });
     this._slidingPanelControler.hide();
-    ;
   }
 }

@@ -24,8 +24,8 @@ class Cards {
     "Ingéniosité & volonté",
     "Savoir & éveil",
     "Liberté & découverte",
-    "Force & foi",
     "Reconsidération & maladie",
+    "Force & foi",
     "Jugement & trahison",
     "Difficulté & persévérance",
     "Egarement de l'âme & introspection",
@@ -33,19 +33,19 @@ class Cards {
     "Epreuve & vengeance",
   ];
 
-  final List<String> arcanaMainColors = [
-    "edf982",
-    "ffc0af",
-    "ffd7af",
-    "8cafc0",
-    "8dc6b3",
-    "95a1c7",
-    "edf982",
-    "ffc0af",
-    "ffd7af",
-    "8cafc0",
-    "8dc6b3",
-    "95a1c7",
+  final List<Color> arcanaMainColors = [
+    Color(0xffedf982),
+    Color(0xffffc0af),
+    Color(0xffffd7af),
+    Color(0xff8cafc0),
+    Color(0xff8dc6b3),
+    Color(0xff95a1c7),
+    Color(0xffedf982),
+    Color(0xffffc0af),
+    Color(0xffffd7af),
+    Color(0xff8cafc0),
+    Color(0xff8dc6b3),
+    Color(0xff95a1c7),
   ];
 
   final List<AssetImage> arcanaImages = [
@@ -81,26 +81,32 @@ class Cards {
   Widget displayArcanaName(List<List<int>> drawnCards, int lastCardDrawn,
       num activePage, bool isVisible) {
     String arcanaNameText = ' ';
+    Color textColor = Colors.transparent;
     if (drawnCards[activePage][0] != -7) {
       arcanaNameText = this.arcanaNames[drawnCards[activePage][0]];
     } else if (!(drawnCards[activePage][0] == -7) && lastCardDrawn >= 0)
       arcanaNameText = this.arcanaNames[lastCardDrawn];
     else
       arcanaNameText = ' ';
+    if (drawnCards[activePage][0] != -7)
+      textColor = this.arcanaMainColors[drawnCards[activePage][0]];
 
     return (AnimatedOpacity(
         opacity: isVisible ? 1.0 : 0,
         duration: Duration(milliseconds: 500),
         child: Container(
             key: _titleKey,
-            child: Text(
+            child: AnimatedDefaultTextStyle(
+              style: TextStyle(color: textColor),
+              duration: Duration(milliseconds: 150),
+              child: Text(
               arcanaNameText,
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
                 fontStyle: FontStyle.italic,
               ),
-            ))));
+    )))));
   }
 
   Widget displayDrawPositionName(num activePage) {
@@ -116,6 +122,7 @@ class Cards {
   Widget displayArcanaSymbols(List<List<int>> drawnCards, int lastCardDrawn,
       num activePage, bool isVisible) {
     String arcanaSymbolsText = 'Ceci est caché';
+    Color textColor = Colors.transparent;
     if (drawnCards[activePage][0] != -7) {
       arcanaSymbolsText =
           "« " + this.arcanaSymbols[drawnCards[activePage][0]] + " »";
@@ -123,11 +130,16 @@ class Cards {
       arcanaSymbolsText = "« " + this.arcanaSymbols[lastCardDrawn] + " »";
     else
       arcanaSymbolsText = ' ';
+    if (drawnCards[activePage][0] != -7)
+      textColor = this.arcanaMainColors[drawnCards[activePage][0]];
 
     return (AnimatedOpacity(
         opacity: isVisible ? 1.0 : 0,
         duration: Duration(milliseconds: 500),
         child: Container(
+            child: AnimatedDefaultTextStyle(
+            duration: Duration(milliseconds: 150),
+            style: TextStyle(color: textColor),
             child: Text(
           arcanaSymbolsText,
           style: TextStyle(
@@ -135,6 +147,6 @@ class Cards {
             fontWeight: FontWeight.bold,
             fontStyle: FontStyle.italic,
           ),
-        ))));
+        )))));
   }
 }

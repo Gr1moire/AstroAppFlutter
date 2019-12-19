@@ -40,66 +40,75 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
   }
 
 // ! This function does many useless operations, it could be optimized by skiping a line if all members are equel to -7
-  int checkIfCardWasDrawn(int randomNum) {
+  int _checkIfCardWasDrawn(int randomNum) {
     List<List<int>> allCards = widget.drawnCards;
-    for (int i = 0, position = 0; position <= (allCards.length - 1); i++) {
-      if (randomNum == allCards[position][i] ||
+
+    for (int primaryIndex = 0, secondaryIndex = 0;
+        primaryIndex <= (allCards.length - 1);
+        secondaryIndex++) {
+      if (randomNum == allCards[primaryIndex][secondaryIndex] ||
           randomNum >= (this.cardsModel.arcanaNames.length)) {
         randomNum >= (this.cardsModel.arcanaNames.length - 1)
             ? randomNum = 0
             : randomNum++;
-        i = -1;
-        position = 0;
+        secondaryIndex = -1;
+        primaryIndex = 0;
       }
-      if (i >= (allCards[position].length - 1)) {
-        i = -1;
-        position++;
+      if (secondaryIndex >= (allCards[primaryIndex].length - 1)) {
+        secondaryIndex = -1;
+        primaryIndex++;
       }
     }
     return (randomNum);
   }
 
   void _changeArcana() {
-    num randomNum = Random().nextInt(cardsModel.cardsList.length);
-    randomNum = checkIfCardWasDrawn(randomNum);
+    num randomNum = Random().nextInt(cardsModel.arcanaImages.length);
+    randomNum = _checkIfCardWasDrawn(randomNum);
     this.drawnCards[widget.position] = randomNum;
     setState(() {
-      this._cardCurrent = cardsModel.cardsList[randomNum];
+      this._cardCurrent = cardsModel.arcanaImages[randomNum];
       this._enableTouch = false;
     });
     widget.updateDrawnCards(widget.position, randomNum);
   }
 
   Widget _setResetButton() {
-    return (Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-      Padding(
-        padding: const EdgeInsets.only(top: 60.0),
-        child: _setResetButton(),
-      ),
-      AnimatedOpacity(
+    return (Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 60.0),
+          child: _setResetButton(),
+        ),
+        AnimatedOpacity(
           opacity: _refreshIsVisible ? 1.0 : 0.0,
           duration: Duration(milliseconds: 500),
           child: Container(
-              child: ButtonTheme(
-                  shape: CircleBorder(),
-                  child: RaisedButton(
-                    onPressed: () {
-                      if (_refreshIsVisible) {
-                        cardKey.currentState.toggleCard();
-                        setState(() {
-                          this.drawnCards[widget.position] = null;
-                          this._enableTouch = true;
-                          this._refreshIsVisible = false;
-                        });
-                      }
-                    },
-                    color: Colors.white,
-                    child: Icon(
-                      Icons.refresh,
-                      color: Colors.black,
-                    ),
-                  ))))
-    ]));
+            child: ButtonTheme(
+              shape: CircleBorder(),
+              child: RaisedButton(
+                onPressed: () {
+                  if (_refreshIsVisible) {
+                    cardKey.currentState.toggleCard();
+                    setState(() {
+                      this.drawnCards[widget.position] = null;
+                      this._enableTouch = true;
+                      this._refreshIsVisible = false;
+                    });
+                  }
+                },
+                color: Colors.white,
+                child: Icon(
+                  Icons.refresh,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
+    ));
   }
 
   Widget build(BuildContext context) {
@@ -109,8 +118,7 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
         spreadRadius: -7,
         color: Colors.black54,
         offset: Offset(7, 8));
-    return
-    FlipCard(
+    return FlipCard(
       key: cardKey,
       direction: FlipDirection.HORIZONTAL,
       flipOnTouch: _enableTouch,

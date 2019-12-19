@@ -5,11 +5,13 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Top-left question icon
-    var questionIcon = Column(children: <Widget>[
-      const SizedBox(height: 35),
-      Row(children: <Widget>[
-        Container(
-            child: ButtonTheme(
+    var questionIcon = Column(
+      children: <Widget>[
+        const SizedBox(height: 35),
+        Row(
+          children: <Widget>[
+            Container(
+              child: ButtonTheme(
                 shape: CircleBorder(),
                 child: RaisedButton(
                   onPressed: () {},
@@ -19,9 +21,13 @@ class Body extends StatelessWidget {
                     size: 30,
                     color: Colors.black,
                   ),
-                ))),
-      ])
-    ]);
+                ),
+              ),
+            ),
+          ],
+        )
+      ],
+    );
 
     // Main icon on first screen
     var mainIcon = Icon(
@@ -33,21 +39,23 @@ class Body extends StatelessWidget {
 
     // Start button
     var raisedButton = ButtonTheme(
-        minWidth: 300.0,
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DrawView(),
-                ));
-          },
-          child: const Text('Tirage',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          color: Colors.amber[300],
-         // splashColor: Colors.deepOrange[300],
-          shape: StadiumBorder(),
-        ));
+      minWidth: 300.0,
+      child: RaisedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DrawView(),
+            ),
+          );
+        },
+        child: const Text('Tirage',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        color: Colors.amber[300],
+        // splashColor: Colors.deepOrange[300],
+        shape: StadiumBorder(),
+      ),
+    );
 
     return Stack(children: <Widget>[
       questionIcon,

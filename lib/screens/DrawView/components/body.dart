@@ -12,7 +12,6 @@ class Draws extends StatefulWidget {
 }
 
 class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
-  GlobalKey _titleKey = GlobalKey();
   PanelController _slidingPanelControler = PanelController();
   Cards cardsModel = Cards();
   // ! _lastCardDrawn should be an updateDrawnCard()'s variable
@@ -62,78 +61,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
     });
   }
 
-  double _getTitlePosition() {
-    final RenderBox renderBoxTitle =
-        _titleKey.currentContext.findRenderObject();
-    final positionTitle = renderBoxTitle.localToGlobal(Offset.zero);
-    return this._screenHeight - (positionTitle.dy * 1.5);
-  }
 
-  // TODO: Fix the animated opacity; Add color by arcana
-  Widget _displayArcanaName() {
-    String arcanaName = ' ';
-    // ! There certainly is a better way to do that.
-    if (this.drawnCards[this._activePage][0] != -7) {
-      this._lastCardDrawn = this.drawnCards[this._activePage][0];
-      arcanaName =
-          this.cardsModel.arcanaNames[this.drawnCards[this._activePage][0]];
-    } else if (!(this.drawnCards[this._activePage][0] == -7) &&
-        this._lastCardDrawn >= 0)
-      arcanaName = this.cardsModel.arcanaNames[this._lastCardDrawn];
-    else
-      arcanaName = ' ';
-
-    return (AnimatedOpacity(
-        opacity: this._shouldArcanaNameBeVisible ? 1.0 : 0,
-        duration: Duration(milliseconds: 500),
-        child: Container(
-            key: _titleKey,
-            child: Text(
-              arcanaName,
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              ),
-            ))));
-  }
-
-  Widget _displayDrawPositionName() {
-    return Text(
-      this.positionName,
-      style: TextStyle(
-        fontSize: 22,
-        fontStyle: FontStyle.italic,
-      ),
-    );
-  }
-
-  Widget _displayArcanaSymbols() {
-    String arcanaSymbols = 'Ceci est caché';
-    if (this.drawnCards[this._activePage][0] != -7) {
-      arcanaSymbols = "« " +
-          this.cardsModel.arcanaSymbols[this.drawnCards[this._activePage][0]] +
-          " »";
-    } else if (!(this.drawnCards[this._activePage][0] == -7) &&
-        this._lastCardDrawn >= 0)
-      arcanaSymbols =
-          "« " + this.cardsModel.arcanaSymbols[this._lastCardDrawn] + " »";
-    else
-      arcanaSymbols = ' ';
-
-    return (AnimatedOpacity(
-        opacity: this._shouldArcanaNameBeVisible ? 1.0 : 0,
-        duration: Duration(milliseconds: 500),
-        child: Container(
-            child: Text(
-          arcanaSymbols,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            fontStyle: FontStyle.italic,
-          ),
-        ))));
-  }
 
   // TODO: Add a curved swipe animation
   Widget _displaySwippableCards() {
@@ -216,8 +144,8 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
           Padding(
             padding: const EdgeInsets.only(top: 75.0),
             child: Column(children: <Widget>[
-              _displayDrawPositionName(),
-              _displayArcanaName(),
+              cardsModel.displayDrawPositionName(this._activePage),
+              cardsModel.displayArcanaName(this.drawnCards, this._lastCardDrawn, this._activePage, this._shouldArcanaNameBeVisible),
             ]),
           ),
           Expanded(
@@ -226,9 +154,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
           ),
           Expanded(
             flex: 1,
-            child: _displayArcanaSymbols(),
-            //    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            //      Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            child: cardsModel.displayArcanaSymbols(this.drawnCards, this._lastCardDrawn, this._activePage, this._shouldArcanaNameBeVisible),
           )
         ])
       ]),
@@ -238,7 +164,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   @override
   void afterFirstLayout(BuildContext context) {
     setState(() {
-      this._slidingUpPanelHeight = _getTitlePosition();
+      this._slidingUpPanelHeight = cardsModel.getTitlePosition(this._screenHeight);
     });
     this._slidingPanelControler.hide();
     ;

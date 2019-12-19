@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Cards{
+  GlobalKey _titleKey = GlobalKey();
   
   final List<String> arcanaNames = [
       "Le Tronc",
@@ -68,4 +69,75 @@ class Cards{
     "Futur",
     "Présent",
   ];
+
+    double getTitlePosition(double screenHeight) {
+    final RenderBox renderBoxTitle =
+        _titleKey.currentContext.findRenderObject();
+    final positionTitle = renderBoxTitle.localToGlobal(Offset.zero);
+    return screenHeight - (positionTitle.dy * 1.5);
+  }
+
+    // TODO: Add color by arcana
+  Widget displayArcanaName(List<List<int>> drawnCards, int lastCardDrawn, num activePage, bool isVisible) {
+    String arcanaNameText = ' ';
+    // ! There certainly is a better way to do that.
+    if (drawnCards[activePage][0] != -7) {
+      arcanaNameText = this.arcanaNames[drawnCards[activePage][0]];
+    } else if (!(drawnCards[activePage][0] == -7) &&
+        lastCardDrawn >= 0)
+      arcanaNameText = this.arcanaNames[lastCardDrawn];
+    else
+      arcanaNameText = ' ';
+
+    return (AnimatedOpacity(
+        opacity: isVisible ? 1.0 : 0,
+        duration: Duration(milliseconds: 500),
+        child: Container(
+            key: _titleKey,
+            child: Text(
+              arcanaNameText,
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+              ),
+            ))));
+  }
+
+  Widget displayDrawPositionName(num activePage) {
+    return Text(
+      positionText[activePage],
+      style: TextStyle(
+        fontSize: 22,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+
+  Widget displayArcanaSymbols(List<List<int>> drawnCards, int lastCardDrawn, num activePage, bool isVisible) {
+    String arcanaSymbolsText = 'Ceci est caché';
+    if (drawnCards[activePage][0] != -7) {
+      arcanaSymbolsText = "« " +
+          this.arcanaSymbols[drawnCards[activePage][0]] +
+          " »";
+    } else if (!(drawnCards[activePage][0] == -7) &&
+        lastCardDrawn >= 0)
+      arcanaSymbolsText =
+          "« " + this.arcanaSymbols[lastCardDrawn] + " »";
+    else
+      arcanaSymbolsText = ' ';
+
+    return (AnimatedOpacity(
+        opacity: isVisible ? 1.0 : 0,
+        duration: Duration(milliseconds: 500),
+        child: Container(
+            child: Text(
+          arcanaSymbolsText,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+          ),
+        ))));
+  }
 }

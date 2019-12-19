@@ -20,6 +20,7 @@ dependencies:
   flip_card: ^0.4.4
   flutter_swiper: ^1.1.6
   sliding_up_panel: ^0.3.6
+  after_layout: ^1.0.7+2
   bloc: ^2.0.0
   flutter:
     sdk: flutter

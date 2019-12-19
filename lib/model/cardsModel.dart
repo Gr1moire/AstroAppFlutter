@@ -34,6 +34,36 @@ class Cards {
   ];
 
   final List<Color> arcanaMainColors = [
+    Color(0xff93a639),
+    Color(0xffaf492e),
+    Color(0xffaf6f2e),
+    Color(0xff29576d),
+    Color(0xff28725a),
+    Color(0xff314174),
+    Color(0xff93a639),
+    Color(0xffaf492e),
+    Color(0xffaf6f2e),
+    Color(0xff29576d),
+    Color(0xff28725a),
+    Color(0xff314174)
+  ];
+
+  final List<Color> arcanaSecondaryColors = [
+    Color(0xFFCBDC75),
+    Color(0xffdd7b61),
+    Color(0xffdda061),
+    Color(0xff507b90),
+    Color(0xff519881),
+    Color(0xff5a699a),
+    Color(0xffCBDC75),
+    Color(0xffdd7b61),
+    Color(0xffdda061),
+    Color(0xff507b90),
+    Color(0xff519881),
+    Color(0xff5a699a)
+  ];
+
+  final List<Color> arcanaTertiaryColors = [
     Color(0xffedf982),
     Color(0xffffc0af),
     Color(0xffffd7af),
@@ -97,16 +127,16 @@ class Cards {
         child: Container(
             key: _titleKey,
             child: AnimatedDefaultTextStyle(
-              style: TextStyle(color: textColor),
-              duration: Duration(milliseconds: 150),
-              child: Text(
-              arcanaNameText,
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              ),
-    )))));
+                style: TextStyle(color: textColor),
+                duration: Duration(milliseconds: 150),
+                child: Text(
+                  arcanaNameText,
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
+                )))));
   }
 
   Widget displayDrawPositionName(num activePage) {
@@ -138,15 +168,15 @@ class Cards {
         duration: Duration(milliseconds: 500),
         child: Container(
             child: AnimatedDefaultTextStyle(
-            duration: Duration(milliseconds: 150),
-            style: TextStyle(color: textColor),
-            child: Text(
-          arcanaSymbolsText,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            fontStyle: FontStyle.italic,
-          ),
-        )))));
+                duration: Duration(milliseconds: 150),
+                style: TextStyle(color: textColor),
+                child: Text(
+                  arcanaSymbolsText,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
+                )))));
   }
 }

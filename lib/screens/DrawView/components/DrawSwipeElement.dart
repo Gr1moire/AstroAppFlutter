@@ -48,7 +48,7 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
         secondaryIndex++) {
       if (randomNum == allCards[primaryIndex][secondaryIndex] ||
           randomNum >= (this.cardsModel.arcanaNames.length)) {
-        randomNum >= (this.cardsModel.arcanaNames.length - 1)
+          randomNum >= (this.cardsModel.arcanaNames.length - 1)
             ? randomNum = 0
             : randomNum++;
         secondaryIndex = -1;
@@ -113,11 +113,6 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
 
   Widget build(BuildContext context) {
     super.build(context);
-    BoxShadow cardsShadow = BoxShadow(
-        blurRadius: 1.5,
-        spreadRadius: -7,
-        color: Colors.black54,
-        offset: Offset(7, 8));
     return FlipCard(
       key: cardKey,
       direction: FlipDirection.HORIZONTAL,
@@ -133,7 +128,6 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           Container(
-            decoration: BoxDecoration(boxShadow: [cardsShadow]),
             child: Image(image: cardsModel.cardBack),
           )
         ]),
@@ -142,7 +136,6 @@ class DrawSwipeElementState extends State<DrawSwipeElement>
       back: FittedBox(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
-            decoration: BoxDecoration(boxShadow: [cardsShadow]),
             child: Image(image: _cardCurrent),
           )
         ]),

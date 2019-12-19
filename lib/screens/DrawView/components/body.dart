@@ -20,6 +20,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   double _screenHeight;
   bool _shouldRefreshBeVisible;
   bool _shouldArcanaNameBeVisible;
+  Color backgroundColor = Colors.white60;
   List<List<int>> drawnCards = [
     // ? I guess we could just initialize it on the fly...
     // Each member is composed of [0] as the drawn card, and [1] as it's oposite (which is [0] + 6 if [0] < 6 or [0] - 6 if [0] >= 6)
@@ -33,7 +34,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   @override
   void initState() {
     super.initState();
-    this._shouldRefreshBeVisible = true;
+    this._shouldRefreshBeVisible = false;
     this._shouldArcanaNameBeVisible = false;
     this._activePage = 0;
     this._lastCardDrawn = -1;
@@ -111,14 +112,32 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
 
   Widget build(BuildContext context) {
     Color panelContentColor = Colors.transparent;
+    Color panelTitleColor = Colors.transparent;
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(24.0),
       topRight: Radius.circular(24.0),
     );
-    if (this.drawnCards[this._activePage][0] != -7)
-      panelContentColor = cardsModel.arcanaMainColors[this.drawnCards[this._activePage][0]];
+    if (this.drawnCards[this._activePage][0] != -7) {
+      panelContentColor = cardsModel
+          .arcanaSecondaryColors[this.drawnCards[this._activePage][0]];
+      panelTitleColor =
+          cardsModel.arcanaMainColors[this.drawnCards[this._activePage][0]];
+    }
     // SlidingUpPanel from here
     return SlidingUpPanel(
+      boxShadow: <BoxShadow> [],
+      onPanelOpened: () {
+        setState(() {
+          backgroundColor = cardsModel
+              .arcanaTertiaryColors[this.drawnCards[this._activePage][0]];
+          _shouldRefreshBeVisible = true;
+        });
+      },
+      onPanelClosed: () {
+        setState(() {
+          backgroundColor = Colors.white60;
+        });
+      },
       maxHeight: this._slidingUpPanelHeight,
       minHeight: this._screenHeight / 10,
       controller: _slidingPanelControler,
@@ -130,8 +149,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
           )),
       collapsed: AnimatedContainer(
         duration: Duration(milliseconds: 150),
-        decoration:
-            BoxDecoration(color: panelContentColor, borderRadius: radius),
+        decoration: BoxDecoration(color: panelTitleColor, borderRadius: radius),
         child: Center(
           child: Text(
             "Title du widget",
@@ -141,30 +159,39 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
       ),
       borderRadius: radius,
       // To here
-      body: Stack(children: [
-        Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 75.0),
-            child: Column(children: <Widget>[
-              cardsModel.displayDrawPositionName(this._activePage),
-              cardsModel.displayArcanaName(this.drawnCards, this._lastCardDrawn,
-                  this._activePage, this._shouldArcanaNameBeVisible),
-            ]),
-          ),
-          Expanded(
-            flex: 3,
-            child: _displaySwippableCards(),
-          ),
-          Expanded(
-            flex: 1,
-            child: cardsModel.displayArcanaSymbols(
-                this.drawnCards,
-                this._lastCardDrawn,
-                this._activePage,
-                this._shouldArcanaNameBeVisible),
-          )
-        ])
-      ]),
+      body: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        color: backgroundColor,
+        child: Stack(children: [
+            Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 75.0),
+                    child: Column(children: <Widget>[
+                      cardsModel.displayDrawPositionName(this._activePage),
+                      cardsModel.displayArcanaName(
+                          this.drawnCards,
+                          this._lastCardDrawn,
+                          this._activePage,
+                          this._shouldArcanaNameBeVisible),
+                    ]),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: _displaySwippableCards(),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: cardsModel.displayArcanaSymbols(
+                        this.drawnCards,
+                        this._lastCardDrawn,
+                        this._activePage,
+                        this._shouldArcanaNameBeVisible),
+                  )
+                ])
+          ]),
+        ),
     );
   }
 

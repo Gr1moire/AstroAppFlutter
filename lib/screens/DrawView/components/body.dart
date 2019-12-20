@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:astro_app/screens/DrawView/components/DrawSwipeElement.dart';
@@ -18,6 +20,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
   num _activePage;
   double _slidingUpPanelHeight = 1;
   double _screenHeight;
+  double _screenWidth;
   bool _shouldRefreshBeVisible;
   bool _shouldArcanaNameBeVisible;
   Color backgroundColor = Colors.white60;
@@ -61,6 +64,16 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
 
   // TODO: Add a curved swipe animation
   Widget _displaySwippableCards() {
+    double cardsRatioInViewport;
+    // Here we are checking if we should use a mobile display or a tablet display. If shortestSide < 600 is Mobile, >= 600 is tablet
+    // ! Could be a state boolean
+    if (MediaQuery.of(context).size.shortestSide < 600)
+      cardsRatioInViewport = ((MediaQuery.of(context).size.width +
+              MediaQuery.of(context).size.height) *
+          0.00055);
+    else
+      cardsRatioInViewport = ((MediaQuery.of(context).size.width +
+              MediaQuery.of(context).size.height) *0.00025);
     return (Container(
       child: PageView.builder(
         onPageChanged: (num) {
@@ -79,15 +92,14 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
           );
         },
         controller: PageController(
-            initialPage: this._activePage, viewportFraction: 0.70),
+            initialPage: this._activePage,
+            viewportFraction: cardsRatioInViewport),
         itemCount: 3,
         itemBuilder: (context, index) {
           return Stack(
             fit: StackFit.expand,
             children: <Widget>[
               InkWell(
-                  child: Padding(
-                padding: EdgeInsets.only(right: 5, left: 5),
                 child: Container(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(2.0),
@@ -102,7 +114,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
                     ),
                   ),
                 ),
-              )),
+              ),
             ],
           );
         },
@@ -125,7 +137,7 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
     }
     // SlidingUpPanel from here
     return SlidingUpPanel(
-      boxShadow: <BoxShadow> [],
+      boxShadow: <BoxShadow>[],
       onPanelOpened: () {
         setState(() {
           backgroundColor = cardsModel
@@ -163,35 +175,33 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
         duration: Duration(milliseconds: 200),
         color: backgroundColor,
         child: Stack(children: [
-            Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 75.0),
-                    child: Column(children: <Widget>[
-                      cardsModel.displayDrawPositionName(this._activePage),
-                      cardsModel.displayArcanaName(
-                          this.drawnCards,
-                          this._lastCardDrawn,
-                          this._activePage,
-                          this._shouldArcanaNameBeVisible),
-                    ]),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: _displaySwippableCards(),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: cardsModel.displayArcanaSymbols(
-                        this.drawnCards,
-                        this._lastCardDrawn,
-                        this._activePage,
-                        this._shouldArcanaNameBeVisible),
-                  )
-                ])
-          ]),
-        ),
+          Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 75.0),
+              child: Column(children: <Widget>[
+                cardsModel.displayDrawPositionName(this._activePage),
+                cardsModel.displayArcanaName(
+                    this.drawnCards,
+                    this._lastCardDrawn,
+                    this._activePage,
+                    this._shouldArcanaNameBeVisible),
+              ]),
+            ),
+            Expanded(
+              flex: 3,
+              child: _displaySwippableCards(),
+            ),
+            Expanded(
+              flex: 1,
+              child: cardsModel.displayArcanaSymbols(
+                  this.drawnCards,
+                  this._lastCardDrawn,
+                  this._activePage,
+                  this._shouldArcanaNameBeVisible),
+            )
+          ])
+        ]),
+      ),
     );
   }
 

@@ -67,7 +67,11 @@ class Body extends StatelessWidget {
             children: <Widget>[
               mainIcon,
               Text(
-                'AstroApp',
+                'Final Fantasy XIV\n',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
+              Text(
+                'StarReadr',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               const SizedBox(

@@ -2,8 +2,8 @@ import 'dart:ffi';
 
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:astro_app/screens/DrawView/components/DrawSwipeElement.dart';
 import 'package:astro_app/model/cardsModel.dart';
+import 'package:astro_app/screens/DrawView/components/DrawSwipeElement.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Draws extends StatefulWidget {
@@ -73,7 +73,8 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
           0.00055);
     else
       cardsRatioInViewport = ((MediaQuery.of(context).size.width +
-              MediaQuery.of(context).size.height) *0.00025);
+              MediaQuery.of(context).size.height) *
+          0.00025);
     return (Container(
       child: PageView.builder(
         onPageChanged: (num) {
@@ -154,15 +155,20 @@ class DrawsState extends State<Draws> with AfterLayoutMixin<Draws> {
       minHeight: this._screenHeight / 10,
       controller: _slidingPanelControler,
       panel: Container(
-          decoration:
-              BoxDecoration(color: panelContentColor, borderRadius: radius),
+        decoration:
+            BoxDecoration(color: panelContentColor, borderRadius: radius),
+        child: Container(
+          // Widget content
           child: Center(
-            child: Text("Contenu du widget"),
-          )),
+            child: Text("content"),
+          ),
+        ),
+      ),
       collapsed: AnimatedContainer(
         duration: Duration(milliseconds: 150),
         decoration: BoxDecoration(color: panelTitleColor, borderRadius: radius),
         child: Center(
+          // Widget title
           child: Text(
             "Title du widget",
             style: TextStyle(color: Colors.white),

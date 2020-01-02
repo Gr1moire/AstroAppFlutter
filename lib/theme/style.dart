@@ -14,10 +14,18 @@ BoxDecoration buildGradient() {
   );
 }
 
+class OverscrollBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
+
 ThemeData appTheme() {
   return ThemeData(
-      primaryColor: Colors.deepPurple[900],
-      accentColor: Colors.deepPurple[900],
+      primaryColor: Colors.white,
+      accentColor: Colors.transparent,
       hintColor: Colors.white,
       dividerColor: Colors.white,
       buttonColor: Colors.orangeAccent,

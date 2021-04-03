@@ -1,2 +1,2 @@
-# AstroAppFlutter
-AstroApp but in Dart and with Flutter
+# ffxiv-astrologian-cards-drawer
+A mobile application to draw AST cards and generating interpretations.
